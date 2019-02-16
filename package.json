@@ -4,7 +4,7 @@
   "description": "Prisma graphql test with postgresql database",
   "main": "index.js",
   "scripts": {
-    "test": "env-cmd ./config/test.env jest --watchAll",
+    "test": "env-cmd ./config/test.env jest --watch",
     "dev": "env-cmd ./config/dev.env nodemon src/index.js --ext js,graphql --exec babel-node",
     "start": "node ./dist/index.js",
     "heroku-postbuild": "babel src --out-dir dist --copy-files",
@@ -23,11 +23,15 @@
   "author": "Gregor Ahcin",
   "license": "ISC",
   "dependencies": {
-    "@babel/polyfill": "^7.0.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.3.3",
+    "@babel/node": "^7.2.2",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.3.1",
+    "@babel/register": "^7.0.0",
     "apollo-boost": "^0.1.14",
-    "babel-register": "^6.26.0",
     "bcryptjs": "^2.4.3",
-    "cross-fetch": "^2.2.2",
+    "cross-fetch": "^2.2.3",
     "env-cmd": "^8.0.2",
     "graphql": "^14.0.2",
     "graphql-cli": "^2.16.4",
@@ -36,10 +40,8 @@
     "prisma-binding": "^2.1.1"
   },
   "devDependencies": {
-    "babel-cli": "^6.26.0",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.7.0",
-    "jest": "^23.5.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.3.2",
+    "jest": "^24.1.0",
     "nodemon": "^1.18.9"
   }
 }

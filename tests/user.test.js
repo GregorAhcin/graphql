@@ -15,8 +15,8 @@ test('Should create new User in database', async () => {
             createUser(
                  data: {
                 name: "Gregor",
-                email: "gregor@test.si",
-                password: "aansssa"
+                email: "gregora@test.si",
+                password: "aansaassa"
             }
             ){
                 token,
