@@ -22,7 +22,7 @@ services:
             #user: postgres
             password:
             #password: example
-            #migrations: false
+            migrations: false
   db:
     image: postgres
     restart: always
