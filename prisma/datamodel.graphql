@@ -1,0 +1,30 @@
+type User {
+  id: ID! @unique
+  name: String!
+  email: String! @unique
+  password: String!
+  posts: [Post!]! @relation(name: "UserOwnsPost", onDelete: CASCADE)
+  comments: [Comment!]! @relation(name: "UserOwnsComment", ondelete: CASCADE)
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Post {
+  id: ID! @unique
+  title: String!
+  body: String!
+  published: Boolean!
+  author: User! @relation(name: "UserOwnsPost", onDelete: SET_NULL)
+  comments: [Comment!]! @relation(name: "PostOwnsComment", onDelete: CASCADE)
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+type Comment {
+  id: ID! @unique
+  text: String!
+  post: Post! @relation(name: "PostOwnsComment", onDelete: SET_NULL)
+  author: User! @relation(name: "UserOwnsComment", onDelete: SET_NULL)
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}

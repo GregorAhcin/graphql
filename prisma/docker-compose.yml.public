@@ -1,0 +1,35 @@
+version: "3"
+services:
+  prisma:
+    image: prismagraphql/prisma:1.26.0
+    restart: always
+    ports:
+      - "4466:4466"
+    environment:
+      PRISMA_CONFIG: |
+        port: 4466
+        databases:
+          default:
+            connector: postgres       
+            host: 
+            #host: db
+            port: '5432'
+            rawAccess: true
+            database: 
+            #database: postgres
+            ssl: true
+            user:
+            #user: postgres
+            password:
+            #password: example
+            #migrations: false
+  db:
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_PASSWORD: example
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
