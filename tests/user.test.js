@@ -5,7 +5,9 @@ import {
 } from 'apollo-boost'
 import prisma from '../src/prisma'
 
-import seedDatabase from './utils/seedDatabase'
+import seedDatabase, {
+    userOne
+} from './utils/seedDatabase'
 import getClient from './utils/getClient'
 
 
@@ -98,4 +100,26 @@ test('Should reject creating User with to short password', async () => {
         mutation: createUser
     })).rejects.toThrow()
 
+})
+
+test('Should return authenticated User', async () => {
+    const client = getClient(userOne.token)
+    const getProfile = gql `
+        query {
+            me {
+                name,
+                id,
+                email
+            }
+        }
+    `
+    const {
+        data
+    } = await client.query({
+        query: getProfile
+    })
+
+    expect(data.me.id).toBe(userOne.output.id)
+    expect(data.me.name).toBe(userOne.input.name)
+    expect(data.me.email).toBe(userOne.input.email)
 })

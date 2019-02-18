@@ -1,16 +1,34 @@
 import prisma from '../../src/prisma'
 import bcrypt from 'bcryptjs'
+import jwt from 'jsonwebtoken'
+
+const userOne = {
+    input: {
+        name: "Tatjana",
+        email: "tatjana@test.si",
+        password: bcrypt.hashSync("tatjana")
+    },
+    output: undefined,
+    token: undefined
+}
 
 const seedDatabase = async () => {
+
+    // Clear database
+
     await prisma.mutation.deleteManyPosts()
     await prisma.mutation.deleteManyUsers()
-    const uporabnik = await prisma.mutation.createUser({
-        data: {
-            name: "Tatjana",
-            email: "tatjana@test.si",
-            password: bcrypt.hashSync("tatjana")
-        }
+
+    // Seed user to database
+
+    userOne.output = await prisma.mutation.createUser({
+        data: userOne.input
     })
+    userOne.token = await jwt.sign({
+        userId: userOne.output.id
+    }, process.env.TOKEN_SECRET)
+
+    // create Post
 
     await prisma.mutation.createPost({
         data: {
@@ -19,7 +37,7 @@ const seedDatabase = async () => {
             published: true,
             author: {
                 connect: {
-                    id: uporabnik.id
+                    id: userOne.output.id
                 }
             }
         }
@@ -31,7 +49,7 @@ const seedDatabase = async () => {
             published: false,
             author: {
                 connect: {
-                    id: uporabnik.id
+                    id: userOne.output.id
                 }
             }
         }
@@ -40,5 +58,5 @@ const seedDatabase = async () => {
 
 export {
     seedDatabase as
-    default
+    default, userOne
 }
