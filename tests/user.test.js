@@ -9,32 +9,31 @@ import seedDatabase, {
     userOne
 } from './utils/seedDatabase'
 import getClient from './utils/getClient'
+import {
+    getUsers,
+    getProfile,
+    login,
+    createUser
+} from './options'
 
 
 const client = getClient()
 
 beforeEach(seedDatabase)
 
+
 test('Should create new User in database', async () => {
-    const createUser = gql `
-            mutation {
-                createUser(
-                     data: {
-                    name: "Gregor",
-                    email: "gregor@test.si",
-                    password: "gregor"
-                }
-                ){
-                    token,
-                    user {
-                        id
-                    }
-                }
-            }
-        `
+    const variables = {
+        data: {
+            name: "Gregor",
+            email: "gregor@test.si",
+            password: "gregor"
+        }
+    }
 
     const response = await client.mutate({
-        mutation: createUser
+        mutation: createUser,
+        variables
     })
 
     const userExist = await prisma.exists.User({
@@ -46,16 +45,6 @@ test('Should create new User in database', async () => {
 })
 
 test('Should return a user data', async () => {
-    const getUsers = gql `
-            query {
-                users {
-                    id,
-                    name,
-                    email
-                }
-            }
-        `
-
     const response = await client.query({
         query: getUsers
     })
@@ -67,52 +56,38 @@ test('Should return a user data', async () => {
 
 
 test('Should reject wrong credentials', async () => {
-    const login = gql `
-        mutation {
-            loginUser( data: {
-                email: "tatjana@test.si",
-                password: "tatjanaaaaa"
-            }){
-                token
-            }
+    const variables = {
+        data: {
+            email: "tatjana@test.si",
+            password: "tatjanaaaaa"
         }
-    `
+    }
 
     await expect(client.mutate({
-        mutation: login
+        mutation: login,
+        variables
     })).rejects.toThrow()
 })
 
 test('Should reject creating User with to short password', async () => {
-    const createUser = gql `
-        mutation { 
-            createUser( data: {
-                name: "Gregor",
-                email: "gregor@test.si",
-                password: "tat"
-            }){
-                token
+    const variables = {
+        data: {
+            name: "Gregor",
+            email: "gregor@test.si",
+            password: "tat"
         }
-        }
-    `
+    }
 
     await expect(client.mutate({
-        mutation: createUser
+        mutation: createUser,
+        variables
     })).rejects.toThrow()
 
 })
 
 test('Should return authenticated User', async () => {
     const client = getClient(userOne.token)
-    const getProfile = gql `
-        query {
-            me {
-                name,
-                id,
-                email
-            }
-        }
-    `
+
     const {
         data
     } = await client.query({
