@@ -12,6 +12,24 @@ const userOne = {
     token: undefined
 }
 
+const postOne = {
+    input: {
+        title: "Published post",
+        body: "this is published post",
+        published: true
+    },
+    output: undefined
+}
+
+const postTwo = {
+    input: {
+        title: 'Unpublished post',
+        body: 'this post is not published',
+        published: false,
+    },
+    output: undefined
+}
+
 const seedDatabase = async () => {
 
     // Clear database
@@ -24,17 +42,16 @@ const seedDatabase = async () => {
     userOne.output = await prisma.mutation.createUser({
         data: userOne.input
     })
+
     userOne.token = await jwt.sign({
         userId: userOne.output.id
     }, process.env.TOKEN_SECRET)
 
-    // create Post
+    // seed first Post to database
 
-    await prisma.mutation.createPost({
+    postOne.output = await prisma.mutation.createPost({
         data: {
-            title: "Published post",
-            body: "this is published post",
-            published: true,
+            ...postOne.input,
             author: {
                 connect: {
                     id: userOne.output.id
@@ -42,11 +59,12 @@ const seedDatabase = async () => {
             }
         }
     })
-    await prisma.mutation.createPost({
+
+    // seed second Post to db
+
+    postTwo.output = await prisma.mutation.createPost({
         data: {
-            title: 'Unpublished post',
-            body: 'this post is not published',
-            published: false,
+            ...postTwo.input,
             author: {
                 connect: {
                     id: userOne.output.id
@@ -58,5 +76,5 @@ const seedDatabase = async () => {
 
 export {
     seedDatabase as
-    default, userOne
+    default, userOne, postOne, postTwo
 }
