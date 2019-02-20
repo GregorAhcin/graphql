@@ -1,5 +1,5 @@
 import "@babel/polyfill/noConflict"
-import "cross-fetch/polyfill"
+//import "cross-fetch/polyfill"
 import {
     gql
 } from 'apollo-boost'
@@ -14,7 +14,7 @@ import {
     getProfile,
     login,
     createUser
-} from './options'
+} from './utils/options'
 
 
 const client = getClient()
@@ -49,7 +49,7 @@ test('Should return a user data', async () => {
         query: getUsers
     })
 
-    expect(response.data.users.length).toBe(1)
+    expect(response.data.users.length).toBe(2)
     expect(response.data.users[0].email).toBe(null)
     expect(response.data.users[0].name).toBe("Tatjana")
 })

@@ -1,5 +1,5 @@
 import '@babel/polyfill/noConflict'
-import 'cross-fetch/polyfill'
+//import 'cross-fetch/polyfill'
 
 import {
     gql
@@ -12,44 +12,31 @@ import seedDatabase, {
     postTwo
 } from './utils/seedDatabase'
 import getClient from './utils/getClient'
+import {
+    getPosts,
+    fetchPosts,
+    updatePost,
+    createPost,
+    deletePostMutation
+} from './utils/options'
 
 const client = getClient()
 
 beforeEach(seedDatabase)
 
 test('Should return published post', async () => {
-    const getPosts = gql `
-        query {
-            posts {
-                title,
-                body,
-                published,
-                id
-            }
-        }
-    `
+
     const response = await client.query({
         query: getPosts
     })
 
-    expect(response.data.posts.length).toBe(1)
+    expect(response.data.posts.length).toBe(2)
     expect(response.data.posts[0].published).toBe(true)
-    expect(response.data.posts[0].title).toBe("Published post")
+    expect(response.data.posts[0].title).toBe("Published post by userOne")
 })
 
 test('Should return authenticated User posts', async () => {
     const client = getClient(userOne.token)
-
-    const fetchPosts = gql `
-        query {
-            myPosts {
-                title,
-                body,
-                id,
-                published
-            }
-        }    
-    `
 
     const {
         data
@@ -64,24 +51,20 @@ test('Should return authenticated User posts', async () => {
 test('Should update authenticated User post', async () => {
     const client = getClient(userOne.token)
 
-    const updatePost = gql `
-        mutation {
-            updatePost(id: "${postOne.output.id}", data: {
-                title: "text",
-                body: "test",
-                published: false
-        } ) {
-            title,
-            body,
-            published
-        }
-        }
-    `
+    const variables = {
+        data: {
+            title: "text",
+            body: "test",
+            published: false
+        },
+        id: postOne.output.id
+    }
 
     const {
         data
     } = await client.mutate({
-        mutation: updatePost
+        mutation: updatePost,
+        variables
     })
 
     const exist = await prisma.exists.Post({
@@ -96,25 +79,19 @@ test('Should update authenticated User post', async () => {
 test('Should create Post', async () => {
     const client = getClient(userOne.token)
 
-    const createPost = gql `
-        mutation {
-            createPost(data: {
-                title: "test",
-                body: "testtest",
-                published: false
-            }){
-                id
-                title
-                body
-                published
-            }
+    const variables = {
+        data: {
+            title: "test",
+            body: "testtest",
+            published: false
         }
-    `
+    }
 
     const {
         data
     } = await client.mutate({
-        mutation: createPost
+        mutation: createPost,
+        variables
     })
 
     expect(data.createPost.title).toBe('test')
@@ -123,21 +100,15 @@ test('Should create Post', async () => {
 test("Should delete second post", async () => {
     const client = getClient(userOne.token)
 
-    const deletePostMutation = gql `
-        mutation {
-            deletePost(id: "${postTwo.output.id}") {
-                title
-                published
-                body
-                id
-            }
-        }
-    `
+    const variables = {
+        id: postTwo.output.id
+    }
 
     const {
         data
     } = await client.mutate({
-        mutation: deletePostMutation
+        mutation: deletePostMutation,
+        variables
     })
 
     const exist = await prisma.exists.Post({
