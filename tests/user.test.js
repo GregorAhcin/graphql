@@ -6,14 +6,17 @@ import {
 import prisma from '../src/prisma'
 
 import seedDatabase, {
-    userOne
+    userOne,
+    postOne,
+    commentOne
 } from './utils/seedDatabase'
 import getClient from './utils/getClient'
 import {
     getUsers,
     getProfile,
     login,
-    createUser
+    createUser,
+    commentSubscription
 } from './utils/options'
 
 

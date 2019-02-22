@@ -5,19 +5,21 @@ import seedDatabase, {
     userOne,
     userTwo,
     commentOne,
-    commentTwo
+    commentTwo,
+    postOne
 } from './utils/seedDatabase'
 import prisma from '../src/prisma'
 import {
-    deleteComment
+    deleteComment,
+    commentSubscription,
+    subscribePost
 } from './utils/options'
-import {
-    assertObjectType
-} from 'graphql';
+
 
 const client = getClient()
 
 beforeEach(seedDatabase)
+
 
 test('Should delete Users own comment', async () => {
     const client = getClient(userOne.token)
@@ -57,4 +59,47 @@ test('Should not delete other Users comment', async () => {
     })
 
     expect(exist).toBe(true)
+})
+
+test('Should subscribe to comment for a post', async (done) => {
+
+    const variables = {
+        postId: postOne.output.id
+    }
+
+    client.subscribe({
+        query: commentSubscription,
+        variables
+    }).subscribe({
+        next(response) {
+            expect(response.data.comment.mutation).toBe('DELETED')
+            done()
+        }
+    })
+
+    setInterval(console.log("b"), 2000)
+
+    await prisma.mutation.deleteComment({
+        where: {
+            id: commentOne.output.id
+        }
+    })
+})
+test('Should subscribe to posts', async (done) => {
+    client.subscribe({
+        query: subscribePost
+    }).subscribe({
+        next(response) {
+            expect(response.data.post.mutation).toBe('DELETED')
+            done()
+        }
+    })
+    setInterval(console.log('a'), 2000)
+
+    await prisma.mutation.deletePost({
+        where: {
+            id: postOne.output.id
+
+        }
+    })
 })

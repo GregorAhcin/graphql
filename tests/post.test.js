@@ -9,7 +9,8 @@ import prisma from '../src/prisma'
 import seedDatabase, {
     userOne,
     postOne,
-    postTwo
+    postTwo,
+    commentOne
 } from './utils/seedDatabase'
 import getClient from './utils/getClient'
 import {
@@ -17,7 +18,9 @@ import {
     fetchPosts,
     updatePost,
     createPost,
-    deletePostMutation
+    deletePostMutation,
+    commentSubscription
+
 } from './utils/options'
 
 const client = getClient()
